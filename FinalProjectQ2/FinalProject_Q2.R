@@ -57,6 +57,10 @@ bestK <- findKnee(foldAvgloglikeEM,15)
 # use all data to select model parameters
 # initialize with kmeans
 mykmeans <- kmeans(measPt, centers=bestK, iter.max=10, nstart=1)
+# run Mstep first to get cluster parameter estimates
+msEst <- mstep(modelName="VVV", data=measPt, z=unmap(mykmeans$cluster))
+# run EM until convergence for training data
+myEMbest <- em(modelName=msEst$modelName, data=measPt, parameters=msEst$parameters)
 
-df = data.frame(mykmeans$cluster)
+df = data.frame(mykmeans$cluster) # Using this as pixel map
 write_xlsx(df, "PixelGroupings_RGBOnly.xlsx")
